@@ -7,46 +7,17 @@
 <style>
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    margin: 0;
-    padding: 0.5rem;
-    background: #f9f9f9;
-    color: #333;
-    font-size: 18px;
-    line-height: 1.6;
+    margin: 0; padding: 0.5rem; background: #f9f9f9; color: #333; font-size: 18px; line-height: 1.6;
   }
-  h1 {
-    text-align: center;
-    font-size: 1.8rem;
-    margin: 1.5rem 0 2rem;
-    color: #2c3e50;
-  }
-  .container {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
+  h1 { text-align: center; font-size: 1.8rem; margin: 1.5rem 0 2rem; color: #2c3e50; }
+  .container { width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
   .tag-btn {
-    display: block;
-    width: 100%;
-    padding: 1.8rem 1rem;
-    margin: 1.2rem 0;
-    border: 1px solid #dcdde1;
-    border-radius: 15px;
-    font-size: 1.3rem;
-    font-weight: bold;
-    background: #fff;
-    text-align: center;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    color: #2f3640;
-    text-decoration: none;
-    box-sizing: border-box;
+    display: block; width: 100%; padding: 1.8rem 1rem; margin: 1.2rem 0;
+    border: 1px solid #dcdde1; border-radius: 15px; font-size: 1.3rem; font-weight: bold;
+    background: #fff; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    color: #2f3640; text-decoration: none; box-sizing: border-box;
   }
-  .tag-btn:active {
-    background: #f5f6fa;
-    transform: scale(0.98);
-  }
+  .tag-btn:active { background: #f5f6fa; transform: scale(0.98); }
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
 
@@ -96,7 +67,7 @@
 
   <div id="result" style="display:none; text-align:center;">
     <div id="result-content"></div>
-    <button class="tag-btn" style="background:#d4edda; border-color:#28a745;" onclick="restartWithNewQuestions()">続ける（次の20問）</button>
+    <button class="tag-btn" style="background:#d4edda; border-color:#28a745;" onclick="restartWithNewQuestions()">続ける（次の10問）</button>
     <button class="tag-btn" style="background:#f1f2f6; border-color:#dcdde1;" onclick="location.reload()">トップに戻る</button>
   </div>
 </div>
@@ -148,11 +119,11 @@
     const solved = allQuestions.filter(q => clearedIds.includes(q.id));
 
     let selection = shuffle([...unsolved]);
-    if (selection.length < 20) {
-      const needed = 20 - selection.length;
+    if (selection.length < 10) {
+      const needed = 10 - selection.length;
       selection = selection.concat(shuffle([...solved]).slice(0, needed));
     } else {
-      selection = selection.slice(0, 20);
+      selection = selection.slice(0, 10);
     }
 
     questions = selection;
