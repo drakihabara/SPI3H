@@ -9,11 +9,11 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0; padding: 0.5rem; background: #f9f9f9; color: #333; font-size: 18px; line-height: 1.6;
   }
-  h1 { text-align: center; font-size: 1.8rem; margin: 1.5rem 0 2rem; color: #2c3e50; }
+  h1 { text-align: center; font-size: 1.6rem; margin: 1rem 0 1.5rem; color: #2c3e50; }
   .container { width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
   .tag-btn {
-    display: block; width: 100%; padding: 1.8rem 1rem; margin: 1.2rem 0;
-    border: 1px solid #dcdde1; border-radius: 15px; font-size: 1.3rem; font-weight: bold;
+    display: block; width: 100%; padding: 1.5rem 1rem; margin: 1rem 0;
+    border: 1px solid #dcdde1; border-radius: 12px; font-size: 1.2rem; font-weight: bold;
     background: #fff; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     color: #2f3640; text-decoration: none; box-sizing: border-box;
   }
@@ -21,31 +21,31 @@
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
 
-  #question { margin: 1.5rem 0.5rem; font-size: 1.25rem; font-weight: bold; line-height: 1.5; }
-  #options { list-style: none; padding: 0; }
-  #options li { margin-bottom: 0.8rem; }
+  #question { margin: 1rem 0.5rem; font-size: 1.15rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
+  #options { list-style: none; padding: 0; margin: 0; }
+  #options li { margin-bottom: 0.6rem; }
   #options button {
-    width: 100%; padding: 1.3rem; font-size: 1.1rem; border: 1px solid #ccc;
-    border-radius: 12px; background: #fff; text-align: left;
+    width: 100%; padding: 1rem; font-size: 1.05rem; border: 1px solid #ccc;
+    border-radius: 10px; background: #fff; text-align: left; line-height: 1.4;
   }
-  #options button:disabled { opacity: 0.8; }
-  #progress { text-align: center; margin-top: 1.5rem; color: #888; font-size: 0.9rem; }
+  #options button:disabled { opacity: 1.0; color: #333; }
+  #progress { text-align: center; margin-top: 1rem; color: #888; font-size: 0.85rem; }
 
   #overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.7); display: none;
     align-items: center; justify-content: center; z-index: 100;
   }
-  #modal { background: #fff; padding: 1.5rem; border-radius: 15px; width: 88%; max-width: 400px; box-sizing: border-box; }
-  #modal-message { font-size: 1.5rem; font-weight: bold; text-align: center; margin-bottom: 1rem; }
+  #modal { background: #fff; padding: 1.5rem; border-radius: 15px; width: 90%; max-width: 400px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
+  #modal-message { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 0.8rem; }
   #modal-explanation {
-    font-size: 0.95rem; color: #444; margin-top: 1rem;
+    font-size: 0.9rem; color: #444; margin-top: 1rem;
     border-top: 1px solid #eee; padding-top: 1rem; line-height: 1.6;
   }
   #modalNextBtn {
-    display: block; width: 100%; padding: 1.3rem; margin-top: 1.5rem;
-    border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold;
-    background: #3498db; color: #fff;
+    display: block; width: 100%; padding: 1rem; margin-top: 1.5rem;
+    border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold;
+    background: #3498db; color: #fff; cursor: pointer;
   }
 </style>
 </head>
@@ -179,7 +179,7 @@
     ul.innerHTML = '';
     q.options.forEach((opt, i) => {
       const li = document.createElement('li');
-      li.innerHTML = `<button>${opt}</button>`;
+      li.innerHTML = `<button><span>${opt}</span></button>`;
       li.firstChild.onclick = () => selectAnswer(i);
       ul.appendChild(li);
     });
