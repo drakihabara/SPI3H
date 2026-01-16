@@ -22,6 +22,7 @@
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
 
   #question { margin: 1rem 0.5rem; font-size: 1.15rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
+  .q-img { width: 100%; max-width: 400px; display: block; margin: 10px auto; border: 1px solid #eee; border-radius: 8px; }
   #options { list-style: none; padding: 0; margin: 0; }
   #options li { margin-bottom: 0.6rem; }
   #options button {
@@ -157,10 +158,12 @@
       const c = parseCsvLine(line);
       if (c.length < 4) return null;
       const id = c[0];
+      const qText = c[1];
+      const imgFile = c[2];
       const answerNum = parseInt(c[c.length - 2]);
       const explanationTxt = c[c.length - 1];
-      const opts = c.slice(2, c.length - 2).filter(opt => opt && opt.trim() !== "");
-      return { id: id, q: c[1], options: opts, answer: answerNum - 1, explanation: explanationTxt };
+      const opts = c.slice(3, c.length - 2).filter(opt => opt && opt.trim() !== "");
+      return { id: id, q: qText, img: imgFile, options: opts, answer: answerNum - 1, explanation: explanationTxt };
     }).filter(q => q !== null);
   }
 
@@ -174,7 +177,12 @@
 
   function showQuestion() {
     const q = questions[current];
-    document.getElementById('question').innerHTML = q.q;
+    let qHtml = `<div>${q.q}</div>`;
+    if (q.img && q.img.trim() !== "") {
+      qHtml += `<img src="images/${q.img}" class="q-img">`;
+    }
+    document.getElementById('question').innerHTML = qHtml;
+
     const ul = document.getElementById('options');
     ul.innerHTML = '';
     q.options.forEach((opt, i) => {
