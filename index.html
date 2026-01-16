@@ -21,12 +21,12 @@
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
 
-  #question { margin: 1rem 0.5rem; font-size: 1.15rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
+  #question { margin: 1rem 0.5rem; font-size: 1.1rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
   .q-img { width: 100%; max-width: 400px; display: block; margin: 10px auto; border: 1px solid #eee; border-radius: 8px; }
   #options { list-style: none; padding: 0; margin: 0; }
-  #options li { margin-bottom: 0.6rem; }
+  #options li { margin-bottom: 0.5rem; }
   #options button {
-    width: 100%; padding: 1rem; font-size: 1.05rem; border: 1px solid #ccc;
+    width: 100%; padding: 0.9rem; font-size: 1rem; border: 1px solid #ccc;
     border-radius: 10px; background: #fff; text-align: left; line-height: 1.4;
   }
   #options button:disabled { opacity: 1.0; color: #333; }
@@ -37,10 +37,10 @@
     background-color: rgba(0, 0, 0, 0.7); display: none;
     align-items: center; justify-content: center; z-index: 100;
   }
-  #modal { background: #fff; padding: 1.5rem; border-radius: 15px; width: 90%; max-width: 400px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
+  #modal { background: #fff; padding: 1.5rem; border-radius: 15px; width: 92%; max-width: 400px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
   #modal-message { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 0.8rem; }
   #modal-explanation {
-    font-size: 0.9rem; color: #444; margin-top: 1rem;
+    font-size: 0.95rem; color: #444; margin-top: 1rem;
     border-top: 1px solid #eee; padding-top: 1rem; line-height: 1.6;
   }
   #modalNextBtn {
@@ -68,7 +68,7 @@
 
   <div id="result" style="display:none; text-align:center;">
     <div id="result-content"></div>
-    <button class="tag-btn" style="background:#d4edda; border-color:#28a745;" onclick="restartWithNewQuestions()">続ける（次の10問）</button>
+    <button class="tag-btn" style="background:#d4edda; border-color:#28a745;" onclick="restartWithNewQuestions()">続ける（未クリア優先）</button>
     <button class="tag-btn" style="background:#f1f2f6; border-color:#dcdde1;" onclick="location.reload()">トップに戻る</button>
   </div>
 </div>
@@ -156,12 +156,12 @@
     return text.trim().split(/\r?\n/).slice(1).map(line => {
       if (!line.trim()) return null;
       const c = parseCsvLine(line);
-      if (c.length < 4) return null;
+      if (c.length < 5) return null;
       const id = c[0];
-      const qText = c[1];
+      const qText = c[1].replace(/\\n/g, '\n');
       const imgFile = c[2];
       const answerNum = parseInt(c[c.length - 2]);
-      const explanationTxt = c[c.length - 1];
+      const explanationTxt = c[c.length - 1].replace(/\\n/g, '\n');
       const opts = c.slice(3, c.length - 2).filter(opt => opt && opt.trim() !== "");
       return { id: id, q: qText, img: imgFile, options: opts, answer: answerNum - 1, explanation: explanationTxt };
     }).filter(q => q !== null);
@@ -208,10 +208,9 @@
       saveClearedId(q.id);
     }
 
-    const correctText = q.options[q.answer];
-    document.getElementById('modal-message').innerHTML = isCorrect ? '🟢 正解！' : '❌ 不正解';
+    document.getElementById('modal-message').innerHTML = isCorrect ? '🟢 正解' : '❌ 不正解';
     document.getElementById('modal-explanation').innerHTML = 
-      "正解：<strong>" + correctText + "</strong><br><br>" + 
+      "正解：<strong>" + q.options[q.answer] + "</strong><br><br>" + 
       "<strong>解説:</strong><br>" + q.explanation;
     
     document.getElementById('overlay').style.display = 'flex';
