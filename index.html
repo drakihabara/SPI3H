@@ -22,11 +22,11 @@
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
   #question { margin: 1rem 0.5rem; font-size: 1.1rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
   .sub-table {
-    width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; table-layout: fixed;
-    background: #fff; border: 2px solid #333; font-size: 0.9rem;
+    width: 100%; border-collapse: collapse; margin-bottom: 1rem; table-layout: fixed;
+    background: #fff; border: 2px solid #333; font-size: 0.8rem;
   }
   .sub-table th, .sub-table td {
-    border: 1px solid #333; padding: 6px 2px; text-align: center;
+    border: 1px solid #333; padding: 4px 1px; text-align: center; line-height: 1.2;
   }
   .sub-table th { background: #eee; font-weight: bold; }
   .q-img { width: 100%; max-width: 400px; display: block; margin: 10px auto; border: 1px solid #eee; border-radius: 8px; }
@@ -187,11 +187,11 @@
         if (pair[1]) tableHtml += `<td>${pair[1]}</td>`;
       });
       tableHtml += '</tr></table>';
-      qHtml = tableHtml + `<div>${partsTable[1].replace(/\n/g, '<br>')}</div>`;
+      qHtml = tableHtml + `<div style="text-align:center; font-size:1.4rem; margin:1rem 0;">${partsTable[1].replace(/\n/g, '<br>')}</div>`;
     } else if (q.id.startsWith('V') && q.q.includes('\n')) {
       const lines = q.q.split('\n');
       if (lines.length === 2) {
-        qHtml = `<div style="display:flex; justify-content:center; gap:4rem; font-size:1.6rem; margin:2.5rem 0; font-weight:bold; letter-spacing:0.1rem; font-family:monospace;"><span>${lines[0]}</span><span>${lines[1]}</span></div>`;
+        qHtml = `<div style="display:flex; justify-content:center; gap:2rem; font-size:1.4rem; margin:2rem 0; font-weight:bold; letter-spacing:0.1rem; font-family:monospace;"><span>${lines[0]}</span><span>${lines[1]}</span></div>`;
       } else {
         qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
       }
@@ -199,13 +199,14 @@
       qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
     }
     if (q.img && q.img.startsWith('[TABLE]')) {
-      const tableData = q.img.replace('[TABLE]', '').split(';');
+      const rows = q.img.replace('[TABLE]', '').split(';');
       let customTable = '<table class="sub-table">';
-      tableData.forEach((row, i) => {
+      rows.forEach((row, i) => {
         customTable += '<tr>';
         const cells = row.split(',');
         cells.forEach(cell => {
-          customTable += i === 0 ? `<th>${cell}</th>` : `<td>${cell}</td>`;
+          const content = cell.replace(/\\n/g, '<br>');
+          customTable += i === 0 ? `<th>${content}</th>` : `<td>${content}</td>`;
         });
         customTable += '</tr>';
       });
