@@ -20,15 +20,19 @@
   .tag-btn:active { background: #f5f6fa; transform: scale(0.98); }
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
-  #question { margin: 1rem 0.5rem; font-size: 1.1rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
+  #question { margin: 1rem 0.5rem; font-size: 1.05rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
+  
   .sub-table {
     width: 100%; border-collapse: collapse; margin-bottom: 1rem; table-layout: fixed;
-    background: #fff; border: 2px solid #333; font-size: 0.8rem;
+    background: #fff; border: 1px solid #000; font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+    font-size: 0.75rem;
   }
   .sub-table th, .sub-table td {
-    border: 1px solid #333; padding: 4px 1px; text-align: center; line-height: 1.2; height: 2.5rem;
+    border: 1px solid #000; padding: 4px 1px; text-align: center; line-height: 1.2; height: 2.8rem;
   }
-  .sub-table th { background: #eee; font-weight: bold; }
+  .sub-table th { background: #fff; font-weight: bold; }
+  .legend-cell { font-size: 0.65rem; text-align: left; padding: 4px !important; line-height: 1.1; border: none !important; }
+
   .q-img { width: 100%; max-width: 400px; display: block; margin: 10px auto; border: 1px solid #eee; border-radius: 8px; }
   #options { list-style: none; padding: 0; margin: 0; }
   #options li { margin-bottom: 0.5rem; }
@@ -150,18 +154,20 @@
       result.push(currentField);
       return result.map(f => f.trim());
     };
-    return text.trim().split(/\r?\n/).slice(1).map(line => {
-      if (!line.trim()) return null;
-      const c = parseCsvLine(line);
-      if (c.length < 5) return null;
+    const rows = [];
+    const lines = text.trim().split(/\r?\n/);
+    for (let i = 1; i < lines.length; i++) {
+      const c = parseCsvLine(lines[i]);
+      if (c.length < 5) continue;
       const id = c[0];
       const qText = c[1].replace(/\\n/g, '\n');
       const imgFile = c[2];
       const answerNum = parseInt(c[c.length - 2]);
       const explanationTxt = c[c.length - 1].replace(/\\n/g, '\n');
       const opts = c.slice(3, c.length - 2).filter(opt => opt !== "");
-      return { id: id, q: qText, img: imgFile, options: opts, answer: answerNum - 1, explanation: explanationTxt };
-    }).filter(q => q !== null);
+      rows.push({ id: id, q: qText, img: imgFile, options: opts, answer: answerNum - 1, explanation: explanationTxt });
+    }
+    return rows;
   }
   function shuffle(a) {
     for(let i=a.length-1;i>0;i--){
@@ -175,11 +181,11 @@
     let qHtml = '';
     const partsTable = q.q.split(' / ');
     if (partsTable.length > 1 && partsTable[0].includes('=')) {
-      let tableHtml = '<table class="sub-table"><tr>';
+      let tableHtml = '<table class="sub-table" style="font-family:sans-serif; font-size:1.1rem;"><tr>';
       const mappings = partsTable[0].split(' ');
       mappings.forEach(m => {
         const pair = m.split('=');
-        if (pair[0]) tableHtml += `<th>${pair[0]}</th>`;
+        if (pair[0]) tableHtml += `<th style="background:#eee;">${pair[0]}</th>`;
       });
       tableHtml += '</tr><tr>';
       mappings.forEach(m => {
@@ -187,11 +193,11 @@
         if (pair[1]) tableHtml += `<td>${pair[1]}</td>`;
       });
       tableHtml += '</tr></table>';
-      qHtml = tableHtml + `<div>${partsTable[1].replace(/\n/g, '<br>')}</div>`;
-    } else if (q.id.startsWith('V') && q.q.includes('\n')) {
+      qHtml = tableHtml + `<div style="text-align:center; font-size:1.4rem; margin:1rem 0;">${partsTable[1].replace(/\n/g, '<br>')}</div>`;
+    } else if (q.id.startsWith('V') && q.q.includes('\n') && !q.q.includes('/')) {
       const lines = q.q.split('\n');
       if (lines.length === 2) {
-        qHtml = `<div style="display:flex; justify-content:center; gap:2rem; font-size:1.4rem; margin:2rem 0; font-weight:bold; letter-spacing:0.1rem; font-family:monospace;"><span>${lines[0]}</span><span>${lines[1]}</span></div>`;
+        qHtml = `<div style="display:flex; justify-content:center; gap:2.5rem; font-size:1.6rem; margin:2rem 0; font-weight:bold; font-family:monospace;"><span>${lines[0]}</span><span>${lines[1]}</span></div>`;
       } else {
         qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
       }
@@ -204,9 +210,16 @@
       rows.forEach((row, i) => {
         customTable += '<tr>';
         const cells = row.split(',');
-        cells.forEach(cell => {
-          const content = cell.replace(/\\n/g, '<br>');
-          customTable += i === 0 ? `<th>${content}</th>` : `<td>${content}</td>`;
+        cells.forEach((cell, j) => {
+          let content = cell.replace(/\\n/g, '<br>');
+          if (i === 0 && j >= 2) {
+            customTable += `<td colspan="5" class="legend-cell">${content}</td>`;
+          } else {
+            if (i === 0 && j > 2) return;
+            const isHeader = (i === 0 || (j === i && i > 0) || (j === 0 && i > 0));
+            if (isHeader) customTable += `<th>${content}</th>`;
+            else customTable += `<td>${content}</td>`;
+          }
         });
         customTable += '</tr>';
       });
