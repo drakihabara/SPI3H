@@ -2,30 +2,57 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>高校生用SPI対策</title>
 <style>
+  /* 拡大防止と基本スタイル */
+  html, body {
+    touch-action: manipulation; /* ダブルタップズームを無効化 */
+  }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0; padding: 0.5rem; background: #f9f9f9; color: #333; font-size: 18px; line-height: 1.6;
   }
   h1 { text-align: center; font-size: 1.6rem; margin: 1rem 0 1.5rem; color: #2c3e50; }
   .container { width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
+  
+  /* ボタンの拡大防止とデザイン */
+  .tag-btn, #options button {
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
   .tag-btn {
     display: block; width: 100%; padding: 1.5rem 1rem; margin: 1rem 0;
     border: 1px solid #dcdde1; border-radius: 12px; font-size: 1.2rem; font-weight: bold;
-    background: #fff; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background: #fff; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     color: #2f3640; text-decoration: none; box-sizing: border-box;
   }
   .tag-btn:active { background: #f5f6fa; transform: scale(0.98); }
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
+  
   #question { margin: 1rem 0.5rem 2.5rem; line-height: 1.6; white-space: pre-wrap; }
 
+  /* ▼▼▼ 今回追加：画像の横幅制限とスタイル ▼▼▼ */
+  .q-img {
+    max-width: 100%;      /* 親要素の幅を超えないように制限 */
+    height: auto;         /* 縦横比を維持 */
+    display: block;       /* ブロック要素にして中央揃え */
+    margin: 1.5rem auto;  /* 上下の余白と左右の中央揃え */
+    border-radius: 8px;   /* 角を少し丸く */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* 軽い影を追加 */
+  }
+  /* ▲▲▲ 追加ここまで ▲▲▲ */
+
+  /* 照合問題用 */
   .matching-container { display: flex; justify-content: center; gap: 2rem; font-size: 1.6rem; font-weight: bold; font-family: monospace; margin: 2rem 0; }
+  
+  /* 言語分野強調用 */
   .q-prompt { display: block; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #000; text-align: center; }
   .q-sub { display: block; font-size: 1.2rem; margin-bottom: 0.3rem; padding-left: 1rem; }
 
+  /* 共通テーブルスタイル */
   .sub-table {
     width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; table-layout: fixed;
     background: #fff; border: 1px solid #000; font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
@@ -245,9 +272,12 @@
     document.getElementById('modal-message').innerHTML = isCorrect ? '🟢 正解' : '❌ 不正解';
     let expText = q.explanation;
     if (expText.includes('[TABLE]')) {
-      const tablePart = expText.match(/\[TABLE\].+$/)[0];
-      const textPart = expText.replace(tablePart, '');
-      expText = textPart + '<br>' + renderGenericTable(tablePart);
+      const tableMatch = expText.match(/\[TABLE\].+$/);
+      if (tableMatch) {
+        const tablePart = tableMatch[0];
+        const textPart = expText.replace(tablePart, '');
+        expText = textPart + '<br>' + renderGenericTable(tablePart);
+      }
     }
     document.getElementById('modal-explanation').innerHTML = "正解：<strong>" + q.options[q.answer] + "</strong><br><br><strong>解説:</strong><br>" + expText.replace(/\n/g, '<br>');
     document.getElementById('overlay').style.display = 'flex';
