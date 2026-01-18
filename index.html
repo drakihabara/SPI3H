@@ -23,13 +23,14 @@
   
   #question { margin: 1rem 0.5rem 2.5rem; line-height: 1.6; white-space: pre-wrap; }
 
-  /* 照合問題（V001-V016）用スタイル */
+  /* 照合問題用 */
   .matching-container { display: flex; justify-content: center; gap: 2rem; font-size: 1.6rem; font-weight: bold; font-family: monospace; margin: 2rem 0; }
   
-  /* 2語の関係（V50-V61）用スタイル */
+  /* 言語分野強調用 */
   .q-prompt { display: block; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #000; text-align: center; }
   .q-sub { display: block; font-size: 1.2rem; margin-bottom: 0.3rem; padding-left: 1rem; }
 
+  /* 共通テーブルスタイル */
   .sub-table {
     width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; table-layout: fixed;
     background: #fff; border: 1px solid #000; font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
@@ -173,12 +174,29 @@
     const q = questions[current];
     let qHtml = '';
     
-    // 1. 照合問題 (V001-V016)
-    if (q.id.match(/^V0(0[1-9]|1[0-6])$/)) {
+    // 1. 置換問題 (N001-N017)
+    const partsSub = q.q.split(' / ');
+    if (partsSub.length > 1 && partsSub[0].includes('=')) {
+      let tableHtml = '<table class="sub-table" style="font-family:sans-serif; margin-bottom:1rem;"><tr>';
+      const mappings = partsSub[0].trim().split(/\s+/);
+      mappings.forEach(m => {
+        const pair = m.split('=');
+        if (pair[0]) tableHtml += `<th style="background:#eee;">${pair[0]}</th>`;
+      });
+      tableHtml += '</tr><tr>';
+      mappings.forEach(m => {
+        const pair = m.split('=');
+        if (pair[1]) tableHtml += `<td>${pair[1]}</td>`;
+      });
+      tableHtml += '</tr></table>';
+      qHtml = tableHtml + `<div style="text-align:center; font-size:1.4rem; margin:1rem 0;">${partsSub[1].replace(/\n/g, '<br>')}</div>`;
+    } 
+    // 2. 照合問題 (V001-V016)
+    else if (q.id.match(/^V0(0[1-9]|1[0-6])$/)) {
       const lines = q.q.split('\n');
       qHtml = `<div class="matching-container"><span>${lines[0]}</span><span>${lines[1]}</span></div>`;
     } 
-    // 2. 言語の2語関係など (V50-V61)
+    // 3. 言語の強調表示 (V50以降など)
     else if (q.id.startsWith('V') && q.q.includes('\n')) {
       const lines = q.q.split('\n');
       qHtml = `<span class="q-prompt">${lines[0]}</span>`;
@@ -186,7 +204,7 @@
         qHtml += `<span class="q-sub">${lines[i]}</span>`;
       }
     } 
-    // 3. その他
+    // 4. その他
     else {
       qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
     }
