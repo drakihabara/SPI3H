@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
@@ -21,27 +20,46 @@
   .tag-btn:active { background: #f5f6fa; transform: scale(0.98); }
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
-  #question { margin: 1rem 0.5rem; font-size: 1.1rem; font-weight: bold; line-height: 1.5; white-space: pre-wrap; }
+  
+  #question { 
+    margin: 1rem 0.5rem 2rem; /* 下の余白を大きくしました */
+    font-size: 1.1rem; 
+    line-height: 1.6; 
+    white-space: pre-wrap; 
+  }
+  .q-prompt { 
+    display: block; 
+    font-size: 1.4rem; /* 最初の1行を大きく */
+    font-weight: bold; 
+    margin-bottom: 0.8rem; 
+    color: #2c3e50;
+  }
+  .q-sub { 
+    display: block; 
+    font-size: 1.1rem; 
+    padding-left: 0.5rem;
+    color: #555;
+  }
+
   .sub-table {
-    width: 100%; border-collapse: collapse; margin-bottom: 1rem; table-layout: fixed;
+    width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; table-layout: fixed;
     background: #fff; border: 1px solid #000; font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
-  .sub-table th, .sub-table td {
-    border: 1px solid #000; padding: 6px 2px; text-align: center; line-height: 1.3;
-  }
+  .sub-table th, .sub-table td { border: 1px solid #000; padding: 8px 2px; text-align: center; line-height: 1.3; }
   .sub-table .no-border { border: none; }
   .legend-cell { font-size: 0.75rem; text-align: left; padding: 4px; border: none !important; }
   .legend-box { border: 1px solid #000; display: inline-block; padding: 3px; margin-bottom: 3px; }
-  .q-img { width: 100%; max-width: 400px; display: block; margin: 10px auto; border: 1px solid #eee; border-radius: 8px; }
+
   #options { list-style: none; padding: 0; margin: 0; }
-  #options li { margin-bottom: 0.5rem; }
+  #options li { margin-bottom: 0.6rem; }
   #options button {
-    width: 100%; padding: 0.9rem; font-size: 1rem; border: 1px solid #ccc;
-    border-radius: 10px; background: #fff; text-align: left; line-height: 1.4;
+    width: 100%; padding: 1rem; font-size: 1.1rem; border: 1px solid #ccc;
+    border-radius: 12px; background: #fff; text-align: left; line-height: 1.4;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
   }
-  #options button:disabled { opacity: 1.0; color: #333; }
-  #progress { text-align: center; margin-top: 1rem; color: #888; font-size: 0.85rem; }
+  #options button:active { background: #f1f2f6; }
+  #progress { text-align: center; margin-top: 1.5rem; color: #888; font-size: 0.9rem; }
   #overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.7); display: none;
@@ -49,10 +67,7 @@
   }
   #modal { background: #fff; padding: 1.5rem; border-radius: 15px; width: 92%; max-width: 400px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
   #modal-message { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 0.8rem; }
-  #modal-explanation {
-    font-size: 0.95rem; color: #444; margin-top: 1rem;
-    border-top: 1px solid #eee; padding-top: 1rem; line-height: 1.6;
-  }
+  #modal-explanation { font-size: 1rem; color: #444; margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem; }
   #modalNextBtn {
     display: block; width: 100%; padding: 1rem; margin-top: 1.5rem;
     border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold;
@@ -148,18 +163,22 @@
     let qHtml = '';
     const partsTable = q.q.split(' / ');
     if (partsTable.length > 1 && partsTable[0].includes('=')) {
-      let tableHtml = '<table class="sub-table" style="font-family:sans-serif; font-size:1.1rem; border:1px solid #ccc;"><tr>';
+      let tableHtml = '<table class="sub-table" style="font-family:sans-serif; border:1px solid #ccc;"><tr>';
       const mappings = partsTable[0].split(' ');
       mappings.forEach(m => { const pair = m.split('='); if (pair[0]) tableHtml += `<th style="background:#eee; border:1px solid #ccc;">${pair[0]}</th>`; });
       tableHtml += '</tr><tr>';
       mappings.forEach(m => { const pair = m.split('='); if (pair[1]) tableHtml += `<td style="border:1px solid #ccc;">${pair[1]}</td>`; });
       tableHtml += '</tr></table>';
       qHtml = tableHtml + `<div style="text-align:center; font-size:1.3rem; margin:1rem 0;">${partsTable[1].replace(/\n/g, '<br>')}</div>`;
-    } else if (q.id.startsWith('V') && q.q.includes('\n') && !q.q.includes('１．') && !q.q.includes('性別')) {
+    } else if (q.id.startsWith('V') && q.q.includes('\n')) {
       const lines = q.q.split('\n');
-      if (lines.length === 2) qHtml = `<div style="display:flex; justify-content:center; gap:2.5rem; font-size:1.6rem; margin:2rem 0; font-weight:bold; font-family:monospace;"><span>${lines[0]}</span><span>${lines[1]}</span></div>`;
-      else qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
-    } else qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
+      qHtml = `<span class="q-prompt">${lines[0]}</span>`;
+      for(let i=1; i<lines.length; i++) {
+        qHtml += `<span class="q-sub">${lines[i]}</span>`;
+      }
+    } else {
+      qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
+    }
 
     if (q.img && q.img.startsWith('[FARE]')) {
       const data = q.img.replace('[FARE]', '').split(';');
