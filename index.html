@@ -2,41 +2,45 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>SPI対策</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<title>高校生用SPI対策</title>
 <style>
-  html, body { touch-action: manipulation; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0; padding: 0.5rem; background: #f9f9f9; color: #333; font-size: 18px; line-height: 1.6;
   }
   h1 { text-align: center; font-size: 1.6rem; margin: 1rem 0 1.5rem; color: #2c3e50; }
   .container { width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
-  .tag-btn, #options button { touch-action: manipulation; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .tag-btn {
     display: block; width: 100%; padding: 1.5rem 1rem; margin: 1rem 0;
     border: 1px solid #dcdde1; border-radius: 12px; font-size: 1.2rem; font-weight: bold;
-    background: #fff; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background: #fff; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     color: #2f3640; text-decoration: none; box-sizing: border-box;
   }
   .tag-btn:active { background: #f5f6fa; transform: scale(0.98); }
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
-  #question { margin: 1rem 0.5rem 2.5rem; line-height: 1.6; white-space: pre-wrap; }
+  
+  #question { 
+    margin: 1rem 0.5rem 2.5rem; /* 下の余白をさらに確保 */
+    font-size: 1.1rem; 
+    line-height: 1.6; 
+    white-space: pre-wrap; 
+  }
+  /* V50以降の単語関係用スタイル */
+  .q-prompt { display: block; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #000; text-align: center; }
+  .q-sub { display: block; font-size: 1.2rem; margin-bottom: 0.3rem; padding-left: 1rem; }
+
   .sub-table {
     width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; table-layout: fixed;
     background: #fff; border: 1px solid #000; font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
-    font-size: 0.95rem;
+    font-size: 0.95rem; /* 表の文字サイズを大きく設定 */
   }
   .sub-table th, .sub-table td { border: 1px solid #000; padding: 8px 2px; text-align: center; line-height: 1.3; }
-  .sub-table th { background: #eee; }
   .sub-table .no-border { border: none; }
   .legend-cell { font-size: 0.75rem; text-align: left; padding: 4px; border: none !important; }
   .legend-box { border: 1px solid #000; display: inline-block; padding: 3px; margin-bottom: 3px; }
-  .matching-container { display: flex; justify-content: center; gap: 2rem; font-size: 1.6rem; font-weight: bold; font-family: monospace; margin: 2rem 0; }
-  .q-prompt { display: block; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #000; text-align: center; }
-  .q-sub { display: block; font-size: 1.2rem; margin-bottom: 0.3rem; padding-left: 1rem; }
-  .q-img { width: 100%; height: auto; display: block; margin: 10px auto; }
+
   #options { list-style: none; padding: 0; margin: 0; }
   #options li { margin-bottom: 0.8rem; }
   #options button {
@@ -57,13 +61,13 @@
   #modalNextBtn {
     display: block; width: 100%; padding: 1rem; margin-top: 1.5rem;
     border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold;
-    background: #3498db; color: #fff;
+    background: #3498db; color: #fff; cursor: pointer;
   }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1 id="mainTitle">SPI対策</h1>
+  <h1 id="mainTitle">高校生用SPI対策</h1>
   <div id="category-select">
     <button class="tag-btn btn-verbal" onclick="startQuiz('verbal')">言語分野</button>
     <button class="tag-btn btn-nonverbal" onclick="startQuiz('nonverbal')">非言語分野</button>
@@ -135,16 +139,24 @@
     const response = await fetch(file);
     const text = await response.text();
     return text.trim().split(/\r?\n/).slice(1).map(line => {
+      // タブで区切り、引用符を除去
       const c = line.split('\t').map(s => s.replace(/^"|"$/g, '').replace(/""/g, '"'));
       if (c.length < 12) return null;
-      return { id: c[0], q: c[1].replace(/\\n/g, '\n'), img: c[2], options: c.slice(3, 10).filter(o => o !== ""), answer: parseInt(c[10]) - 1, explanation: c[11].replace(/\\n/g, '\n') };
+      return { 
+        id: c[0], 
+        q: c[1].replace(/\\n/g, '\n'), 
+        img: c[2], 
+        options: c.slice(3, 10).filter(o => o !== ""), 
+        answer: parseInt(c[10]) - 1, 
+        explanation: c[11].replace(/\\n/g, '\n') 
+      };
     }).filter(q => q !== null);
   }
   function shuffle(a) {
     for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
     return a;
   }
-  function renderGenericTable(tableStr) {
+  function renderTable(tableStr) {
     const rows = tableStr.replace('[TABLE]', '').split(';');
     let tableHtml = '<table class="sub-table">';
     rows.forEach((row, i) => {
@@ -162,46 +174,44 @@
   function showQuestion() {
     const q = questions[current];
     let qHtml = '';
-    const partsSub = q.q.split(' / ');
-    if (partsSub.length > 1 && partsSub[0].includes('=')) {
-      let subTable = '<table class="sub-table" style="font-family:sans-serif;"><tr>';
-      const mappings = partsSub[0].trim().split(/\s+/);
-      mappings.forEach(m => { const pair = m.split('='); if (pair[0]) subTable += `<th>${pair[0]}</th>`; });
-      subTable += '</tr><tr>';
-      mappings.forEach(m => { const pair = m.split('='); if (pair[1]) subTable += `<td>${pair[1]}</td>`; });
-      subTable += '</tr></table>';
-      qHtml = subTable + `<div style="text-align:center; font-size:1.4rem; margin:1rem 0;">${partsSub[1].replace(/\n/g, '<br>')}</div>`;
-    } 
-    else if (q.id.match(/^V0(0[1-9]|1[0-6])$/)) {
-      const lines = q.q.split('\n');
-      qHtml = `<div class="matching-container"><span>${lines[0]}</span><span>${lines[1]}</span></div>`;
-    } 
-    else if (q.id.startsWith('V') && q.q.includes('\n')) {
+    
+    // 言語分野の改行あり問題（2語の関係など）の特別表示
+    if (q.id.startsWith('V') && q.q.includes('\n')) {
       const lines = q.q.split('\n');
       qHtml = `<span class="q-prompt">${lines[0]}</span>`;
-      for(let i=1; i<lines.length; i++) { qHtml += `<span class="q-sub">${lines[i]}</span>`; }
-    } 
-    else { qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`; }
+      for(let i=1; i<lines.length; i++) {
+        qHtml += `<span class="q-sub">${lines[i]}</span>`;
+      }
+    } else {
+      qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`;
+    }
+
+    // 運賃表 [FARE] 形式の描画
     if (q.img && q.img.startsWith('[FARE]')) {
       const data = q.img.replace('[FARE]', '').split(';');
       const stations = data[0].split('|');
-      let fareTable = '<table class="sub-table">';
-      fareTable += `<tr><th>駅名</th><th>${stations[0]}</th><td colspan="5" class="legend-cell"><div class="legend-box">上段 普通運賃<br>下段 普通運賃+特急料金</div></td></tr>`;
+      let tableHtml = '<table class="sub-table">';
+      tableHtml += `<tr><th>駅名</th><th>${stations[0]}</th><td colspan="5" class="legend-cell"><div class="legend-box">上段 普通運賃<br>下段 普通運賃+特急料金</div><br>※実際とは異なる</td></tr>`;
       for (let i = 1; i < stations.length; i++) {
-        fareTable += `<tr><th>${stations[i]}</th>`;
+        tableHtml += `<tr><th>${stations[i]}</th>`;
         const prices = data[i].split('|');
-        for (let j = 0; j < i; j++) { fareTable += `<td>${prices[j].replace(/\\n/g, '<br>')}</td>`; }
-        fareTable += `<th>${stations[i]}</th>`;
-        for (let j = i + 1; j < stations.length; j++) { fareTable += '<td class="no-border"></td>'; }
-        fareTable += '</tr>';
+        for (let j = 0; j < i; j++) { tableHtml += `<td>${prices[j].replace(/\\n/g, '<br>')}</td>`; }
+        tableHtml += `<th>${stations[i]}</th>`;
+        for (let j = i + 1; j < stations.length; j++) { tableHtml += '<td class="no-border"></td>'; }
+        tableHtml += '</tr>';
       }
-      fareTable += '</table>';
-      qHtml += fareTable;
-    } else if (q.img && q.img.startsWith('[TABLE]')) {
-      qHtml += renderGenericTable(q.img);
-    } else if (q.img && q.img.trim() !== "") {
+      tableHtml += '</table>';
+      qHtml += tableHtml;
+    } 
+    // 一般表 [TABLE] 形式の描画
+    else if (q.img && q.img.startsWith('[TABLE]')) {
+      qHtml += renderTable(q.img);
+    } 
+    // 通常画像
+    else if (q.img && q.img.trim() !== "") {
       qHtml += `<img src="images/${q.img}" class="q-img">`;
     }
+    
     document.getElementById('question').innerHTML = qHtml;
     const ul = document.getElementById('options');
     ul.innerHTML = '';
@@ -224,15 +234,15 @@
     const isCorrect = (idx === q.answer);
     if (isCorrect) { score++; saveClearedId(q.id); }
     document.getElementById('modal-message').innerHTML = isCorrect ? '🟢 正解' : '❌ 不正解';
+    
+    // 解説文の中に [TABLE] があれば表に変換
     let expText = q.explanation;
     if (expText.includes('[TABLE]')) {
-      const tableMatch = expText.match(/\[TABLE\].+$/);
-      if (tableMatch) {
-        const tablePart = tableMatch[0];
-        const textPart = expText.replace(tablePart, '');
-        expText = textPart + '<br>' + renderGenericTable(tablePart);
-      }
+      const tablePart = expText.match(/\[TABLE\].+$/)[0];
+      const textPart = expText.replace(tablePart, '');
+      expText = textPart + '<br>' + renderTable(tablePart);
     }
+    
     document.getElementById('modal-explanation').innerHTML = "正解：<strong>" + q.options[q.answer] + "</strong><br><br><strong>解説:</strong><br>" + expText.replace(/\n/g, '<br>');
     document.getElementById('overlay').style.display = 'flex';
   }
