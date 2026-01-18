@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>高校生用SPI対策</title>
+<title>SPI対策</title>
 <style>
   html, body { touch-action: manipulation; }
   body {
@@ -22,9 +22,7 @@
   .tag-btn:active { background: #f5f6fa; transform: scale(0.98); }
   .btn-verbal { border-left: 10px solid #3498db; }
   .btn-nonverbal { border-left: 10px solid #e74c3c; }
-  
   #question { margin: 1rem 0.5rem 2.5rem; line-height: 1.6; white-space: pre-wrap; }
-
   .sub-table {
     width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; table-layout: fixed;
     background: #fff; border: 1px solid #000; font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
@@ -35,11 +33,10 @@
   .sub-table .no-border { border: none; }
   .legend-cell { font-size: 0.75rem; text-align: left; padding: 4px; border: none !important; }
   .legend-box { border: 1px solid #000; display: inline-block; padding: 3px; margin-bottom: 3px; }
-
   .matching-container { display: flex; justify-content: center; gap: 2rem; font-size: 1.6rem; font-weight: bold; font-family: monospace; margin: 2rem 0; }
   .q-prompt { display: block; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #000; text-align: center; }
   .q-sub { display: block; font-size: 1.2rem; margin-bottom: 0.3rem; padding-left: 1rem; }
-
+  .q-img { width: 100%; height: auto; display: block; margin: 10px auto; }
   #options { list-style: none; padding: 0; margin: 0; }
   #options li { margin-bottom: 0.8rem; }
   #options button {
@@ -66,7 +63,7 @@
 </head>
 <body>
 <div class="container">
-  <h1 id="mainTitle">高校生用SPI対策</h1>
+  <h1 id="mainTitle">SPI対策</h1>
   <div id="category-select">
     <button class="tag-btn btn-verbal" onclick="startQuiz('verbal')">言語分野</button>
     <button class="tag-btn btn-nonverbal" onclick="startQuiz('nonverbal')">非言語分野</button>
@@ -185,12 +182,11 @@
       for(let i=1; i<lines.length; i++) { qHtml += `<span class="q-sub">${lines[i]}</span>`; }
     } 
     else { qHtml = `<div>${q.q.replace(/\n/g, '<br>')}</div>`; }
-
     if (q.img && q.img.startsWith('[FARE]')) {
       const data = q.img.replace('[FARE]', '').split(';');
       const stations = data[0].split('|');
       let fareTable = '<table class="sub-table">';
-      fareTable += `<tr><th>駅名</th><th>${stations[0]}</th><td colspan="5" class="legend-cell"><div class="legend-box">上段 普通運賃<br>下段 普通運賃+特急料金</div><br>※実際とは異なる</td></tr>`;
+      fareTable += `<tr><th>駅名</th><th>${stations[0]}</th><td colspan="5" class="legend-cell"><div class="legend-box">上段 普通運賃<br>下段 普通運賃+特急料金</div></td></tr>`;
       for (let i = 1; i < stations.length; i++) {
         fareTable += `<tr><th>${stations[i]}</th>`;
         const prices = data[i].split('|');
